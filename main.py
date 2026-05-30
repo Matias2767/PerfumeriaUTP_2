@@ -7,16 +7,16 @@ import webbrowser
 import os
 from pathlib import Path
 
-from api import FRONTEND_DIST, FRONTEND_FALLBACK, crear_app
+from api import FRONTEND_DIST, crear_app
 
 
 BASE_DIR = Path(__file__).resolve().parent
-PACKAGE_JSON = BASE_DIR / "package.json"
-PACKAGE_LOCK = BASE_DIR / "package-lock.json"
-NODE_MODULES = BASE_DIR / "node_modules"
+FRONTEND_DIR = BASE_DIR / "Vista" / "frontend"
+PACKAGE_JSON = FRONTEND_DIR / "package.json"
+PACKAGE_LOCK = FRONTEND_DIR / "package-lock.json"
+NODE_MODULES = FRONTEND_DIR / "node_modules"
 VITE_JS = NODE_MODULES / "vite" / "bin" / "vite.js"
 FRONTEND_INDEX = FRONTEND_DIST / "index.html"
-FALLBACK_INDEX = FRONTEND_FALLBACK / "index.html"
 URL = "http://127.0.0.1:5000"
 
 
@@ -41,13 +41,9 @@ def preparar_frontend() -> None:
         if FRONTEND_INDEX.exists():
             print("npm no esta disponible; usando el frontend ya compilado.")
             return
-        if FALLBACK_INDEX.exists():
-            print("npm no esta disponible; usando la interfaz web integrada sin React.")
-            return
 
         print("\nNo se encontro npm en Windows.")
-        print("Instala Node.js LTS desde https://nodejs.org y reinicia VS Code,")
-        print("o conserva la carpeta web/ para usar la interfaz integrada.")
+        print("Instala Node.js LTS desde https://nodejs.org y reinicia VS Code.")
         print("Luego ejecuta:")
         print(r".\.venv\Scripts\python.exe main.py")
         sys.exit(1)
@@ -68,9 +64,9 @@ def frontend_necesita_build() -> bool:
         return True
 
     build_time = FRONTEND_INDEX.stat().st_mtime
-    candidatos = [PACKAGE_JSON, PACKAGE_LOCK, BASE_DIR / "index.html", BASE_DIR / "vite.config.js"]
-    candidatos.extend((BASE_DIR / "src").rglob("*"))
-    candidatos.extend((BASE_DIR / "public").rglob("*"))
+    candidatos = [PACKAGE_JSON, PACKAGE_LOCK, FRONTEND_DIR / "index.html", FRONTEND_DIR / "vite.config.js"]
+    candidatos.extend((FRONTEND_DIR / "src").rglob("*"))
+    candidatos.extend((FRONTEND_DIR / "public").rglob("*"))
 
     return any(archivo.is_file() and archivo.stat().st_mtime > build_time for archivo in candidatos)
 
@@ -120,8 +116,14 @@ def buscar_node() -> str | None:
 
 def ejecutar(comando: list[str], mensaje: str) -> None:
     print(mensaje)
+    env = os.environ.copy()
+    node = buscar_node()
+    if node:
+        node_dir = str(Path(node).resolve().parent)
+        env["PATH"] = node_dir + os.pathsep + env.get("PATH", "")
+
     try:
-        subprocess.run(comando, cwd=BASE_DIR, check=True)
+        subprocess.run(comando, cwd=FRONTEND_DIR, check=True, env=env)
     except subprocess.CalledProcessError as error:
         print(f"No se pudo completar el comando: {' '.join(comando)}")
         raise SystemExit(error.returncode) from error

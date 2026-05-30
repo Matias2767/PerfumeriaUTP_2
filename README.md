@@ -7,10 +7,8 @@ Proyecto web para gestionar inventario, reservas, entregas y reposicion de merca
 - `BD/`: conexion PostgreSQL y funciones SQL.
 - `Modelo/`: objetos Python basados en tablas de la base de datos.
 - `Controlador/`: reglas de negocio y llamadas a funciones/SP.
-- `Vista/`: interfaz temporal por terminal.
-- `api.py`: API Flask para conectar el front React con el backend Python.
-- `src/`: frontend React + Vite.
-- `public/`: archivos publicos del frontend.
+- `Vista/frontend/`: frontend React + Vite.
+- `api.py`: API Flask que conecta el frontend React con el backend Python.
 - `config/`: configuracion local.
 
 ## Ejecucion rapida
@@ -27,7 +25,7 @@ Tambien puedes usar:
 .\iniciar.bat
 ```
 
-Ese comando prepara el frontend React si hay `npm`; si no existe `npm`, usa una interfaz web integrada sin dependencias de Node. Luego levanta la API y abre el sistema en:
+Ese comando prepara el frontend React si hace falta, levanta la API y abre el sistema en:
 
 ```text
 http://127.0.0.1:5000
@@ -56,13 +54,14 @@ La API corre en `http://127.0.0.1:5000/api`.
 Instalar dependencias:
 
 ```powershell
-npm install
+cd .\Vista\frontend
+..\..\.tools\node\npm.cmd install
 ```
 
 Levantar Vite:
 
 ```powershell
-npm run dev
+..\..\.tools\node\node.exe .\node_modules\vite\bin\vite.js --host 127.0.0.1
 ```
 
 ## Endpoints
@@ -91,11 +90,3 @@ npm run dev
 - Admin aprueba orden de reposicion: pasa a `A` y afecta `stock.pedido`.
 - Admin genera entrada desde reposicion: cierra la orden, libera pedido y aumenta stock fisico.
 - Admin puede cancelar reservas u ordenes abiertas/aprobadas, liberando inventario cuando corresponde.
-
-## Terminal
-
-La interfaz temporal por consola sigue disponible:
-
-```powershell
-.\.venv\Scripts\python.exe main.py
-```
