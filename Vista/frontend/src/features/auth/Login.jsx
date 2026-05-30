@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import erpApi from '../../api/erpApi';
 
 const Login = () => {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ usuario: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -19,7 +19,7 @@ const Login = () => {
       login(res.data.user, res.data.token);
       navigate('/');
     } catch (err) {
-      setError('Correo o contraseña incorrectos');
+      setError('Usuario o contrasena incorrectos');
     } finally {
       setLoading(false);
     }
@@ -33,32 +33,34 @@ const Login = () => {
           <div className="w-12 h-12 bg-emerald-700 rounded-xl mx-auto mb-4 flex items-center justify-center">
             <span className="text-white font-bold text-lg">M</span>
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">Marly Perfumería</h1>
-          <p className="text-sm text-gray-500 mt-1">Panel de administración</p>
+          <h1 className="text-xl font-semibold text-gray-900">Marly Perfumeria</h1>
+          <p className="text-sm text-gray-500 mt-1">Panel de administracion</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
             <input
-              type="email"
+              type="text"
               required
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              value={form.usuario}
+              onChange={(e) => setForm({ ...form, usuario: e.target.value })}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
-              placeholder="usuario@marly.com"
+              placeholder="Nombre de usuario"
+              autoComplete="username"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Contrasena</label>
             <input
               type="password"
               required
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
-              placeholder="••••••••"
+              placeholder="********"
+              autoComplete="current-password"
             />
           </div>
 
