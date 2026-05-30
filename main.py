@@ -6,7 +6,7 @@ import sys
 import webbrowser
 from pathlib import Path
 
-from api import FRONTEND_DIST, crear_app
+from api import FRONTEND_DIST, FRONTEND_FALLBACK, crear_app
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -14,6 +14,7 @@ PACKAGE_JSON = BASE_DIR / "package.json"
 PACKAGE_LOCK = BASE_DIR / "package-lock.json"
 NODE_MODULES = BASE_DIR / "node_modules"
 FRONTEND_INDEX = FRONTEND_DIST / "index.html"
+FALLBACK_INDEX = FRONTEND_FALLBACK / "index.html"
 URL = "http://127.0.0.1:5000"
 
 
@@ -37,10 +38,14 @@ def preparar_frontend() -> None:
         if FRONTEND_INDEX.exists():
             print("npm no esta disponible; usando el frontend ya compilado.")
             return
+        if FALLBACK_INDEX.exists():
+            print("npm no esta disponible; usando la interfaz web integrada sin React.")
+            return
 
         print("\nNo se encontro npm en Windows.")
-        print("Instala Node.js LTS desde https://nodejs.org y reinicia VS Code.")
-        print("Luego ejecuta otra vez:")
+        print("Instala Node.js LTS desde https://nodejs.org y reinicia VS Code,")
+        print("o conserva la carpeta web/ para usar la interfaz integrada.")
+        print("Luego ejecuta:")
         print(r".\.venv\Scripts\python.exe main.py")
         sys.exit(1)
 

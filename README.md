@@ -27,7 +27,7 @@ Tambien puedes usar:
 .\iniciar.bat
 ```
 
-Ese comando prepara el frontend si hace falta, levanta la API y abre el sistema en:
+Ese comando prepara el frontend React si hay `npm`; si no existe `npm`, usa una interfaz web integrada sin dependencias de Node. Luego levanta la API y abre el sistema en:
 
 ```text
 http://127.0.0.1:5000

@@ -27,6 +27,7 @@ from Controlador.procesos import (
 
 BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIST = BASE_DIR / "dist"
+FRONTEND_FALLBACK = BASE_DIR / "web"
 
 
 app = Flask(__name__, static_folder=None)
@@ -377,9 +378,10 @@ def servir_frontend(path: str):
     if path.startswith("api/"):
         return _error("Endpoint no encontrado.", 404)
 
-    destino = FRONTEND_DIST / path
+    frontend = _frontend_root()
+    destino = frontend / path
     if destino.is_file():
-        return send_from_directory(FRONTEND_DIST, path)
+        return send_from_directory(frontend, path)
 
     return _servir_frontend("index.html")
 
@@ -424,13 +426,20 @@ def _error(mensaje: str, status: int):
 
 
 def _servir_frontend(path: str):
-    if not (FRONTEND_DIST / "index.html").exists():
+    frontend = _frontend_root()
+    if not (frontend / "index.html").exists():
         return _error(
             "Frontend no compilado. Ejecuta main.py para preparar la interfaz web.",
             503,
         )
 
-    return send_from_directory(FRONTEND_DIST, path)
+    return send_from_directory(frontend, path)
+
+
+def _frontend_root() -> Path:
+    if (FRONTEND_DIST / "index.html").exists():
+        return FRONTEND_DIST
+    return FRONTEND_FALLBACK
 
 
 if __name__ == "__main__":

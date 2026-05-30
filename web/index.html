@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfumeria UTP</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">P</div>
+        <div>
+          <strong>Perfumeria UTP</strong>
+          <span>Sistema ERP</span>
+        </div>
+      </div>
+      <nav id="nav" class="hidden">
+        <button data-view="dashboard" class="active">Dashboard</button>
+        <button data-view="inventario">Inventario</button>
+        <button data-view="reservas">Reservas</button>
+        <button data-view="entregas">Entregas</button>
+        <button data-view="reposiciones">Reposiciones</button>
+      </nav>
+      <div id="sessionBox" class="session hidden"></div>
+    </aside>
+
+    <main>
+      <section id="loginView" class="login">
+        <form id="loginForm" class="panel">
+          <h1>Iniciar sesion</h1>
+          <label>Usuario o correo</label>
+          <input name="email" required autocomplete="username" />
+          <label>Contrasena</label>
+          <input name="password" type="password" required autocomplete="current-password" />
+          <p id="loginError" class="error"></p>
+          <button type="submit">Ingresar</button>
+        </form>
+      </section>
+
+      <section id="appView" class="hidden">
+        <header>
+          <div>
+            <h1 id="title">Dashboard</h1>
+            <p id="subtitle">Resumen general</p>
+          </div>
+          <button id="logoutBtn" class="secondary">Cerrar sesion</button>
+        </header>
+
+        <div id="message"></div>
+        <div id="content"></div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
