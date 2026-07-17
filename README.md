@@ -13,10 +13,10 @@ Proyecto web para gestionar inventario, reservas, entregas y reposicion de merca
 
 ## Ejecucion rapida
 
-Con PostgreSQL activo, ejecuta un solo comando:
+Con PostgreSQL activo y los archivos `.env` configurados, ejecuta:
 
 ```powershell
-.\.venv\Scripts\python.exe main.py
+.\venv\Scripts\python.exe main.py
 ```
 
 Tambien puedes usar:
@@ -28,26 +28,62 @@ Tambien puedes usar:
 Ese comando prepara el frontend React si hace falta, levanta la API y abre el sistema en:
 
 ```text
-http://127.0.0.1:5000
+http://localhost:5000
 ```
 
 Si aparece un mensaje indicando que no existe `npm`, instala Node.js LTS desde `https://nodejs.org`, reinicia VS Code y vuelve a ejecutar el mismo comando.
+
+## Configuracion
+
+Crear entorno virtual e instalar dependencias del backend:
+
+```powershell
+py -m venv venv
+.\venv\Scripts\python.exe -m pip install --upgrade pip
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Crear configuracion local del backend:
+
+```powershell
+Copy-Item .\config\.env.example .\config\.env
+```
+
+Edita `config/.env` y define la contrasena local de PostgreSQL. La base esperada es:
+
+```text
+PGDATABASE=perfumeriautp
+```
+
+Crear configuracion local del frontend:
+
+```powershell
+Copy-Item .\Vista\frontend\.env.example .\Vista\frontend\.env
+```
+
+Instalar dependencias del frontend:
+
+```powershell
+cd .\Vista\frontend
+& "C:\Program Files\nodejs\npm.cmd" ci
+cd ..\..
+```
 
 ## Backend manual
 
 Instalar dependencias:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
 Levantar API:
 
 ```powershell
-.\.venv\Scripts\python.exe api.py
+.\venv\Scripts\python.exe api.py
 ```
 
-La API corre en `http://127.0.0.1:5000/api`.
+La API corre en `http://localhost:5000/api` y escucha en el host/puerto definidos por `BACKEND_HOST` y `BACKEND_PORT`.
 
 ## Frontend manual
 
@@ -55,13 +91,47 @@ Instalar dependencias:
 
 ```powershell
 cd .\Vista\frontend
-..\..\.tools\node\npm.cmd install
+& "C:\Program Files\nodejs\npm.cmd" ci
 ```
 
 Levantar Vite:
 
 ```powershell
-..\..\.tools\node\node.exe .\node_modules\vite\bin\vite.js --host 127.0.0.1
+& "C:\Program Files\nodejs\npm.cmd" run dev
+```
+
+Generar compilacion de produccion:
+
+```powershell
+& "C:\Program Files\nodejs\npm.cmd" run build
+```
+
+## Acceso por red local
+
+Para acceder desde otra computadora de la misma red, configura el frontend con la IP del equipo servidor:
+
+```env
+VITE_API_URL=http://IP_DEL_SERVIDOR:5000/api
+```
+
+Y permite ese origen en el backend:
+
+```env
+FRONTEND_ORIGIN=http://IP_DEL_SERVIDOR:5173
+```
+
+El backend debe escuchar en:
+
+```env
+BACKEND_HOST=0.0.0.0
+BACKEND_PORT=5000
+```
+
+Vite debe escuchar en:
+
+```env
+VITE_DEV_HOST=0.0.0.0
+VITE_DEV_PORT=5173
 ```
 
 ## Endpoints

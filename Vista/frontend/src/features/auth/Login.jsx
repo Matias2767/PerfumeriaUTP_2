@@ -18,7 +18,7 @@ const Login = () => {
       const res = await erpApi.post('/auth/login', form);
       login(res.data.user, res.data.token);
       navigate('/');
-    } catch (err) {
+    } catch {
       setError('Usuario o contrasena incorrectos');
     } finally {
       setLoading(false);

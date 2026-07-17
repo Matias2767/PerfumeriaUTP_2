@@ -11,7 +11,7 @@ const KpiCard = ({ label, value, sub, color }) => (
 );
 
 const Dashboard = () => {
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
 
   const { data: kpis, isLoading } = useQuery({
     queryKey: ['kpis'],

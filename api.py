@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from datetime import date, datetime
 from decimal import Decimal
 from functools import wraps
@@ -29,13 +30,31 @@ BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIST = BASE_DIR / "Vista" / "frontend" / "dist"
 
 
+def backend_host() -> str:
+    return os.getenv("BACKEND_HOST", "0.0.0.0")
+
+
+def backend_port() -> int:
+    return int(os.getenv("BACKEND_PORT", "5000"))
+
+
+def frontend_origins() -> list[str]:
+    origins = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
+    return [origin.strip() for origin in origins.split(",") if origin.strip()]
+
+
+def install_db_functions() -> bool:
+    return os.getenv("INSTALL_DB_FUNCTIONS", "false").strip().lower() in {"1", "true", "yes", "si"}
+
+
 app = Flask(__name__, static_folder=None)
-CORS(app)
+CORS(app, origins=frontend_origins())
 
 
 def crear_app() -> Flask:
-    instalar_funciones_autenticacion()
-    instalar_funciones_procesos()
+    if install_db_functions():
+        instalar_funciones_autenticacion()
+        instalar_funciones_procesos()
     return app
 
 
@@ -441,4 +460,4 @@ def _servir_frontend(path: str):
 
 
 if __name__ == "__main__":
-    crear_app().run(host="127.0.0.1", port=5000, debug=True)
+    crear_app().run(host=backend_host(), port=backend_port(), debug=True)

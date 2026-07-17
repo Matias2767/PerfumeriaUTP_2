@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterable
@@ -21,10 +22,15 @@ class ConexionBD:
         self,
         host: str = "localhost",
         port: int = 5432,
-        database: str = "PerfumeriaUTP",
-        user: str = "postgres",
-        password: str = "admin",
+        database: str = "perfumeriautp",
+        user: str | None = None,
+        password: str | None = None,
     ) -> None:
+        if not user:
+            raise ValueError("Falta configurar PGUSER en config/.env.")
+        if not password:
+            raise ValueError("Falta configurar PGPASSWORD en config/.env.")
+
         self.config = {
             "host": host,
             "port": port,
@@ -35,14 +41,12 @@ class ConexionBD:
 
     @classmethod
     def desde_entorno(cls) -> "ConexionBD":
-        import os
-
         return cls(
             host=os.getenv("PGHOST", "localhost"),
             port=int(os.getenv("PGPORT", "5432")),
-            database=os.getenv("PGDATABASE", "PerfumeriaUTP"),
-            user=os.getenv("PGUSER", "postgres"),
-            password=os.getenv("PGPASSWORD", "admin"),
+            database=os.getenv("PGDATABASE", "perfumeriautp"),
+            user=os.getenv("PGUSER"),
+            password=os.getenv("PGPASSWORD"),
         )
 
     @contextmanager

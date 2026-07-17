@@ -7,7 +7,7 @@ import webbrowser
 import os
 from pathlib import Path
 
-from api import FRONTEND_DIST, crear_app
+from api import FRONTEND_DIST, backend_host, backend_port, crear_app
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -17,7 +17,6 @@ PACKAGE_LOCK = FRONTEND_DIR / "package-lock.json"
 NODE_MODULES = FRONTEND_DIR / "node_modules"
 VITE_JS = NODE_MODULES / "vite" / "bin" / "vite.js"
 FRONTEND_INDEX = FRONTEND_DIST / "index.html"
-URL = "http://127.0.0.1:5000"
 
 
 def main() -> None:
@@ -25,11 +24,19 @@ def main() -> None:
     preparar_frontend()
 
     app = crear_app()
-    print(f"Sistema listo: {URL}")
+    host = backend_host()
+    port = backend_port()
+    url = public_url(host, port)
+    print(f"Sistema listo: {url}")
     print("Presiona CTRL+C para detener el programa.")
     if os.environ.get("PERFUMERIA_NO_BROWSER") != "1":
-        webbrowser.open(URL)
-    app.run(host="127.0.0.1", port=5000, debug=False)
+        webbrowser.open(url)
+    app.run(host=host, port=port, debug=False)
+
+
+def public_url(host: str, port: int) -> str:
+    navegador_host = "localhost" if host == "0.0.0.0" else host
+    return f"http://{navegador_host}:{port}"
 
 
 def preparar_frontend() -> None:

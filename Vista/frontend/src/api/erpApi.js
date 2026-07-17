@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
+if (!apiUrl) {
+  throw new Error('Falta configurar VITE_API_URL');
+}
+
 const erpApi = axios.create({
-  baseURL: 'http://127.0.0.1:5000/api',
+  baseURL: apiUrl,
   headers: {
     'Content-Type': 'application/json'
   }
