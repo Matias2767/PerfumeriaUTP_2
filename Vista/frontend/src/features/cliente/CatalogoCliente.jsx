@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import erpApi from '../../api/erpApi';
+import { useAuth } from '../../context/AuthContext';
 import heroImage from '../../images/Fondo1.png';
 
 const imageModules = import.meta.glob('../../images/*.{jpg,jpeg,png}', {
@@ -11,6 +13,23 @@ const imageModules = import.meta.glob('../../images/*.{jpg,jpeg,png}', {
 const productImages = Object.entries(imageModules).map(([path, url]) => ({
   name: path.split('/').pop().replace(/\.[^.]+$/, ''),
   url,
+}));
+
+const publicProducts = productImages.map((image, index) => ({
+  id: `public-${index}`,
+  product_id: null,
+  nombre_producto: image.name,
+  marca: 'Marly',
+  familia: 'Fragancia',
+  grupo: 'Perfumes',
+  genero: '',
+  concentracion: '',
+  descripcion: 'Una fragancia seleccionada para acompanar momentos especiales.',
+  precio: null,
+  stock: 1,
+  comprometido: 0,
+  disponible: 1,
+  active: true,
 }));
 
 const todayISO = () => {
@@ -71,6 +90,8 @@ const stockBadge = (product) => {
 
 const CatalogoCliente = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [brand, setBrand] = useState('');
   const [selected, setSelected] = useState(null);
@@ -79,11 +100,14 @@ const CatalogoCliente = () => {
   const [notice, setNotice] = useState('');
   const [showReorder, setShowReorder] = useState(false);
 
-  const { data: productos = [], isLoading } = useQuery({
+  const { data: productosPrivados = [], isLoading } = useQuery({
     queryKey: ['catalogo-cliente'],
     queryFn: () => erpApi.get('/inventario').then((r) => r.data),
+    enabled: Boolean(user),
     refetchInterval: 30000,
   });
+
+  const productos = user ? productosPrivados : publicProducts;
 
   const brands = useMemo(
     () => [...new Set(productos.map((product) => product.marca).filter(Boolean))].sort(),
@@ -137,6 +161,10 @@ const CatalogoCliente = () => {
   });
 
   const openRequest = (product) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
     setSelected(product);
     setRequest({ cantidad: 1, fecha: todayISO() });
     setActionError('');
@@ -203,6 +231,12 @@ const CatalogoCliente = () => {
         </div>
       </section>
 
+      {!user && (
+        <div className="mt-6 rounded-2xl border border-pink-100 bg-white/85 px-4 py-3 text-sm font-medium text-rose-800 shadow-sm">
+          Inicia sesion o registrate para consultar disponibilidad en tiempo real y crear reservas.
+        </div>
+      )}
+
       {notice && (
         <div className="mt-6 rounded-2xl border border-pink-100 bg-white/85 px-4 py-3 text-sm font-medium text-rose-800 shadow-sm">
           {notice}
@@ -260,7 +294,7 @@ const CatalogoCliente = () => {
                     {badge.label}
                   </span>
                   <span className="absolute bottom-4 right-4 rounded-full bg-white/92 px-4 py-2 text-sm font-bold text-rose-900 shadow-lg">
-                    {formatCurrency(product.precio)}
+                    {user ? formatCurrency(product.precio) : 'Catalogo'}
                   </span>
                 </div>
 
@@ -287,7 +321,7 @@ const CatalogoCliente = () => {
                   </div>
 
                   <button onClick={() => openRequest(product)} className="client-primary-button mt-5 w-full">
-                    Reservar
+                    {user ? 'Reservar' : 'Iniciar sesion para reservar'}
                   </button>
                 </div>
               </article>

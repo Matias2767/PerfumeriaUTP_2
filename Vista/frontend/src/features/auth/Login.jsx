@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import erpApi from '../../api/erpApi';
 
@@ -9,6 +9,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from || '/';
+  const message = location.state?.message;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +20,7 @@ const Login = () => {
     try {
       const res = await erpApi.post('/auth/login', form);
       login(res.data.user, res.data.token);
-      navigate('/');
+      navigate(redirectTo, { replace: true });
     } catch {
       setError('Usuario o contrasena incorrectos');
     } finally {
@@ -36,6 +39,12 @@ const Login = () => {
           <h1 className="text-xl font-semibold text-rose-950">Marly Perfumeria</h1>
           <p className="text-sm text-rose-400 mt-1">Panel de administracion</p>
         </div>
+
+        {message && (
+          <p className="mb-4 rounded-lg border border-pink-100 bg-pink-50 px-3 py-2 text-sm text-rose-700">
+            {message}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -78,6 +87,13 @@ const Login = () => {
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
         </form>
+
+        <p className="mt-5 text-center text-sm text-rose-500">
+          No tienes cuenta?{' '}
+          <Link to="/registro" className="font-semibold text-pink-600 hover:text-pink-700">
+            Registrarse
+          </Link>
+        </p>
       </div>
     </div>
   );
